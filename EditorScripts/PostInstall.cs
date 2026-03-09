@@ -8,7 +8,7 @@ public static class PostInstall
     static PostInstall()
     {
         // 源文件夹：包里的 AssetsContent
-        string source = Path.Combine("Packages", "com.duyutong.uianimabehaviortree", "AssetsContent");
+        string source = Path.Combine("Packages", "UIAnimaBehaviorTree", "AssetsContent");
         // 目标文件夹：项目 Assets 下
         string dest = Path.Combine("Assets", "BehaviorTree");
 
