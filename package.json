@@ -1,0 +1,19 @@
+{
+  "name": "com.duyutong.uianimabehaviortree",
+  "version": "1.0.0",
+  "displayName": "UIAnimaBehaviorTree",
+  "description": "UI动画节点编辑器",
+  "unity": "2021.3",
+  "keywords": [
+    "ui",
+    "animation",
+    "behavior-tree"
+  ],
+  "category": "Tools",
+  "dependencies": {
+    "com.unity.addressables": "1.19.0"
+  },
+  "author": {
+    "name": "Duyutong"
+  }
+}
