@@ -1,22 +1,33 @@
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.PackageManager;
 using System.IO;
 
 [InitializeOnLoad]
 public static class PostInstall
 {
+    const string InstallFlag = "UIAnimaBehaviorTree_Installed";
+
     static PostInstall()
     {
-        // 源文件夹：包里的 AssetsContent
-        string source = Path.Combine("Packages", "UIAnimaBehaviorTree", "AssetsContent");
-        // 目标文件夹：项目 Assets 下
+        if (EditorPrefs.GetBool(InstallFlag))
+            return;
+
+        var package = PackageInfo.FindForAssembly(typeof(PostInstall).Assembly);
+        if (package == null)
+            return;
+
+        string source = Path.Combine(package.resolvedPath, "Runtime");
         string dest = Path.Combine("Assets", "BehaviorTree");
 
         if (Directory.Exists(source) && !Directory.Exists(dest))
         {
             CopyDirectory(source, dest);
             AssetDatabase.Refresh();
-            Debug.Log("UIAnimaBehaviorTree 已安装到 Assets 目录下！");
+
+            EditorPrefs.SetBool(InstallFlag, true);
+
+            Debug.Log("UIAnimaBehaviorTree 已安装到 Assets/BehaviorTree");
         }
     }
 
@@ -26,6 +37,8 @@ public static class PostInstall
 
         foreach (var file in Directory.GetFiles(sourceDir))
         {
+            if (file.EndsWith(".meta")) continue;
+
             string destFile = Path.Combine(destDir, Path.GetFileName(file));
             File.Copy(file, destFile, true);
         }
