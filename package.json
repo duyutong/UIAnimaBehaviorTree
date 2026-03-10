@@ -11,8 +11,7 @@
   ],
   "category": "Tools",
   "dependencies": {
-    "com.unity.addressables": "1.19.0",
-    "com.unity.visualscripting": "1.9.4"
+    "com.unity.addressables": "1.19.0"
   },
   "author": {
     "name": "Duyutong"
