@@ -15,7 +15,7 @@ public static class BehaviorTreeInstaller
             return;
 
         // 获取当前脚本所在的 Package
-        var package = PackageInfo.FindForAssembly(typeof(BehaviorTreeInstaller).Assembly);
+        var package = UnityEditor.PackageManager.PackageInfo.FindForAssembly(typeof(BehaviorTreeInstaller).Assembly);
         if (package == null)
             return;
 
