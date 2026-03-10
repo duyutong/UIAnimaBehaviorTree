@@ -6,30 +6,56 @@ using System.IO;
 [InitializeOnLoad]
 public static class BehaviorTreeInstaller
 {
-    // 防止重复迁移
     private const string InstallFlag = "UIAnimaBehaviorTree_Installed";
 
     static BehaviorTreeInstaller()
     {
+        Debug.Log("[BTInstaller] 执行 BehaviorTreeInstaller 初始化");
+
+        // 检查是否已安装过
         if (EditorPrefs.GetBool(InstallFlag))
+        {
+            Debug.Log("[BTInstaller] 已检测到安装标记，跳过迁移");
             return;
+        }
 
         // 获取当前脚本所在的 Package
-        var package = UnityEditor.PackageManager.PackageInfo.FindForAssembly(typeof(BehaviorTreeInstaller).Assembly);
+        var package = PackageInfo.FindForAssembly(typeof(BehaviorTreeInstaller).Assembly);
         if (package == null)
+        {
+            Debug.LogError("[BTInstaller] 找不到 BehaviorTreeInstaller 对应的 PackageInfo");
             return;
+        }
+
+        Debug.Log("[BTInstaller] 找到 Package: " + package.name);
+        Debug.Log("[BTInstaller] Package 路径: " + package.resolvedPath);
 
         string sourceDir = Path.Combine(package.resolvedPath, "BehaviorTree");
         string destDir = Path.Combine(Application.dataPath, "BehaviorTree");
 
+        Debug.Log("[BTInstaller] 源路径: " + sourceDir);
+        Debug.Log("[BTInstaller] 目标路径: " + destDir);
+
         if (!Directory.Exists(sourceDir))
+        {
+            Debug.LogWarning("[BTInstaller] 源路径不存在，迁移终止");
             return;
+        }
 
-        Debug.Log("开始迁移 BehaviorTree 到 Assets...");
+        Debug.Log("[BTInstaller] 开始迁移 BehaviorTree 到 Assets...");
 
-        CopyDirectory(sourceDir, destDir);
+        try
+        {
+            CopyDirectory(sourceDir, destDir);
+            Debug.Log("[BTInstaller] 复制完成");
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError("[BTInstaller] 复制出错: " + ex.Message);
+            return;
+        }
 
-        // 删除 Package 内源码
+        // 尝试删除 Package 内源码
         try
         {
             Directory.Delete(sourceDir, true);
@@ -37,17 +63,19 @@ public static class BehaviorTreeInstaller
             string metaFile = sourceDir + ".meta";
             if (File.Exists(metaFile))
                 File.Delete(metaFile);
+
+            Debug.Log("[BTInstaller] Package 内源文件已尝试删除");
         }
-        catch
+        catch (System.Exception ex)
         {
-            Debug.LogWarning("Package 内源文件删除失败（只读缓存或权限问题），不影响使用。");
+            Debug.LogWarning("[BTInstaller] 删除 Package 内源文件失败（只读或权限问题），不影响使用: " + ex.Message);
         }
 
         AssetDatabase.Refresh();
 
         EditorPrefs.SetBool(InstallFlag, true);
 
-        Debug.Log("BehaviorTree 已迁移到 Assets/BehaviorTree");
+        Debug.Log("[BTInstaller] BehaviorTree 已成功迁移到 Assets/BehaviorTree");
     }
 
     private static void CopyDirectory(string source, string dest)
@@ -55,23 +83,37 @@ public static class BehaviorTreeInstaller
         if (!Directory.Exists(dest))
             Directory.CreateDirectory(dest);
 
-        // 复制所有文件
         foreach (var file in Directory.GetFiles(source))
         {
             string fileName = Path.GetFileName(file);
             string destFile = Path.Combine(dest, fileName);
 
-            File.Copy(file, destFile, true);
+            try
+            {
+                File.Copy(file, destFile, true);
+                Debug.Log("[BTInstaller] 复制文件: " + fileName);
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError("[BTInstaller] 复制文件失败: " + fileName + " Error: " + ex.Message);
+            }
 
-            // 复制.meta
+            // 复制 .meta 文件
             string metaFile = file + ".meta";
             if (File.Exists(metaFile))
             {
-                File.Copy(metaFile, destFile + ".meta", true);
+                try
+                {
+                    File.Copy(metaFile, destFile + ".meta", true);
+                    Debug.Log("[BTInstaller] 复制.meta文件: " + fileName + ".meta");
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogWarning("[BTInstaller] 复制.meta失败: " + fileName + ".meta Error: " + ex.Message);
+                }
             }
         }
 
-        // 递归复制子目录
         foreach (var dir in Directory.GetDirectories(source))
         {
             string dirName = Path.GetFileName(dir);
