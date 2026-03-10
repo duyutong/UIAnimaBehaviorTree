@@ -12,12 +12,12 @@ public static class BehaviorTreeInstaller
     {
         Debug.Log("[BTInstaller] 执行 BehaviorTreeInstaller 初始化");
 
-        // 检查是否已安装过
-        if (EditorPrefs.GetBool(InstallFlag))
-        {
-            Debug.Log("[BTInstaller] 已检测到安装标记，跳过迁移");
-            return;
-        }
+        //// 检查是否已安装过
+        //if (EditorPrefs.GetBool(InstallFlag))
+        //{
+        //    Debug.Log("[BTInstaller] 已检测到安装标记，跳过迁移");
+        //    return;
+        //}
 
         // 获取当前脚本所在的 Package
         var package = UnityEditor.PackageManager.PackageInfo.FindForAssembly(typeof(BehaviorTreeInstaller).Assembly);
