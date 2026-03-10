@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "displayName": "UIAnimaBehaviorTree",
   "description": "UI动画节点编辑器",
-  "unity": "2021.3",
+  "unity": "6000.3",
   "keywords": [
     "ui",
     "animation",
