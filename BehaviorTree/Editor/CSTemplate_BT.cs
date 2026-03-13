@@ -40,6 +40,8 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
+
 [Serializable]
 public class #StateName#State : #BaseState#
 {
@@ -83,6 +85,7 @@ public class #StateName#State : #BaseState#
     {
         if (StringComparer.Ordinal.Equals(fieldName, default)) return ESetFieldValueResult.Succ;
         #SetFieldValue#
+        else if (StringComparer.Ordinal.Equals(fieldName, ""pointerEventData"") && value is PointerEventData PointerEventDataValue) pointerEventData = PointerEventDataValue;
         else return ESetFieldValueResult.Fail;
 
         return ESetFieldValueResult.Succ;
