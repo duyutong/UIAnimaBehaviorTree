@@ -1,6 +1,6 @@
 {
   "name": "com.duyutong.uianimabehaviortree",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "displayName": "UIAnimaBehaviorTree",
   "description": "UI动画节点编辑器",
   "unity": "6000.3",
