@@ -799,6 +799,34 @@ public static class ExpandMethod
         }
         return false;
     }
+    public static bool GetMemberValue(this object target, string memberName,out object value) 
+    {
+        value = null;
+
+        if (target == null || string.IsNullOrEmpty(memberName))
+            return false;
+
+        var type = target.GetType();
+
+        // 先尝试设置属性
+        PropertyInfo prop = type.GetProperty(memberName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+        if (prop != null && prop.CanWrite)
+        {
+            value  = prop.GetValue(target);
+            return true;
+        }
+
+        // 如果属性没找到，尝试设置字段
+        FieldInfo field = type.GetField(memberName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+        if (field != null)
+        {
+           value = field.GetValue(target);
+            return true;
+        }
+
+        // 找不到属性或字段
+        return false;
+    }
     /// <summary>
     /// 使用反射为目标对象设置指定字段或属性的值。
     /// </summary>

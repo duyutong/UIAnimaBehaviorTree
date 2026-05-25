@@ -1,13 +1,13 @@
-﻿
+
 using System;
 using UnityEngine;
 using UnityEditor.Experimental.GraphView;
-public class Deco_TimeDelay : DecoratorNode
+public class Behav_SpriteRendererAlpha : BehaviorNode
 {
-    public override string stateName => "TimeDelayState";
-    public Deco_TimeDelay() : base() 
+    public override string stateName => "SpriteRendererAlphaState";
+    public Behav_SpriteRendererAlpha() : base() 
     {
-        title = "TimeDelay";
+        title = "SpriteRendererAlpha";
         
         Port port_enter = CreatePortForNode(this, Direction.Input, typeof(System.Boolean), Port.Capacity.Multi);
         port_enter.portName = "enter";

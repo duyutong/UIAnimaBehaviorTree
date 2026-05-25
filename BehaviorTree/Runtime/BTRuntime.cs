@@ -118,7 +118,7 @@ public class BTRuntime
 
         return sortedList;
     }
-    public static void FindMissingElements(List<string> listA, List<string> listB)
+    private void FindMissingElements(List<string> listA, List<string> listB)
     {
         if (listA == null || listB == null)
             throw new ArgumentNullException("输入列表不能为 null");
@@ -145,6 +145,7 @@ public class BTRuntime
         foreach (KeyValuePair<string, BTState> keyValuePair in stateDic)
         {
             BTState state = keyValuePair.Value;
+            state.OnRecycle();
             BTObjectPool.ReturnObject(state);
         }
         lastStateDic.Clear();
@@ -212,6 +213,19 @@ public class BTRuntime
     {
         TiggerBaseState check = checkState as TiggerBaseState;
         return check != null && !string.IsNullOrEmpty(check.triggerTag);
+    }
+    public List<ParameterRelayState> GetParamRelays(string paramName) 
+    {
+        List<ParameterRelayState> relayStates = new();
+        foreach (var state in stateDic)
+        { 
+            if (state.Value.stateName != "ParameterRelayState") continue;
+            if (state.Value is not ParameterRelayState relayState) continue;
+            if (relayState.parameterName != paramName) continue;
+            relayStates.Add(relayState);
+        }
+        if(relayStates.Count > 0)return relayStates;
+        return null;
     }
     public void OnUpdate()
     {
