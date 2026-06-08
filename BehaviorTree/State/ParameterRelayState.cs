@@ -12,13 +12,13 @@ using UnityEngine.EventSystems;
 public class ParameterRelayState : BehaviorTreeBaseState
 {
     #region AutoContext
-    
-public System.String stringValue;
-public System.String parameterName;
 
-    public override BTStateObject stateObj 
+    public System.String stringValue;
+    public System.String parameterName;
+
+    public override BTStateObject stateObj
     {
-         get 
+        get
         {
             if (_stateObj == null)
             {
@@ -27,9 +27,9 @@ public System.String parameterName;
                 _stateObj.output = output;
                 _stateObj.interruptible = interruptible;
                 _stateObj.interruptTag = interruptTag;
-                
-_stateObj.stringValue = stringValue;
-_stateObj.parameterName = parameterName;
+
+                _stateObj.stringValue = stringValue;
+                _stateObj.parameterName = parameterName;
             }
             return _stateObj;
         }
@@ -48,17 +48,17 @@ _stateObj.parameterName = parameterName;
             output = _stateObj.output;
             interruptible = _stateObj.interruptible;
             interruptTag = _stateObj.interruptTag;
-            
-stringValue = _stateObj.stringValue;
-parameterName = _stateObj.parameterName;
+
+            stringValue = _stateObj.stringValue;
+            parameterName = _stateObj.parameterName;
         }
     }
-     protected override ESetFieldValueResult SetFieldValue(string fieldName, object value)
+    protected override ESetFieldValueResult SetFieldValue(string fieldName, object value)
     {
         if (StringComparer.Ordinal.Equals(fieldName, default)) return ESetFieldValueResult.Succ;
-        
-else if (StringComparer.Ordinal.Equals(fieldName, "stringValue") && value is System.String stringValueValue) stringValue = stringValueValue;
-else if (StringComparer.Ordinal.Equals(fieldName, "parameterName") && value is System.String parameterNameValue) parameterName = parameterNameValue;
+
+        else if (StringComparer.Ordinal.Equals(fieldName, "stringValue") && value is System.String stringValueValue) stringValue = stringValueValue;
+        else if (StringComparer.Ordinal.Equals(fieldName, "parameterName") && value is System.String parameterNameValue) parameterName = parameterNameValue;
         else if (StringComparer.Ordinal.Equals(fieldName, "pointerEventData") && value is PointerEventData PointerEventDataValue) pointerEventData = PointerEventDataValue;
         else return ESetFieldValueResult.Fail;
 
@@ -70,30 +70,42 @@ else if (StringComparer.Ordinal.Equals(fieldName, "parameterName") && value is S
         output = _stateObj.output;
         interruptible = _stateObj.interruptible;
         interruptTag = _stateObj.interruptTag;
-        
-stringValue = _stateObj.stringValue;
-parameterName = _stateObj.parameterName;
+
+        stringValue = _stateObj.stringValue;
+        parameterName = _stateObj.parameterName;
     }
     #endregion
 
-    public object Value { set { this.value = value; } }
+    private class ValueInfo
+    {
+        public object currValue;
+        public object oldValue;
+    }
+    public object Value
+    {
+        set
+        {
+            foreach (var kvp in valueInfoDic)
+                valueInfoDic[kvp.Key].currValue = value;
+        }
+    }
 
-    private object value;
-    private object lastValue;
+    private Dictionary<string, ValueInfo> valueInfoDic = new();
     public override void OnInitFinish()
     {
         base.OnInitFinish();
         for (int i = 0; i < output.Count; i++)
         {
             BTOutputInfo info = output[i];
-            runtime.stateDic[info.nodeId].GetMemberValue(info.toPortName,out value);
+            runtime.stateDic[info.nodeId].GetMemberValue(info.toPortName, out object nodevalue);
+            valueInfoDic.AddOrReplace(info.nodeId, new ValueInfo() { oldValue = nodevalue });
         }
     }
     public override void OnEnter()
     {
         base.OnEnter();
 
-        bool isCanExecute = value != null && !value.Equals(lastValue) && runtime != null;
+        bool isCanExecute = runtime != null;
         if (isCanExecute) OnExecute();
         else OnExit();
     }
@@ -102,8 +114,14 @@ parameterName = _stateObj.parameterName;
         for (int i = 0; i < output.Count; i++)
         {
             BTOutputInfo info = output[i];
+            object value = valueInfoDic[info.nodeId].currValue;
+            object oldValue = valueInfoDic[info.nodeId].oldValue;
+            if (value == null || value.Equals(oldValue)) continue;
+
+            valueInfoDic[info.nodeId].oldValue = value;
             runtime.stateDic[info.nodeId].SetMemberValue(info.toPortName, value);
         }
+
         OnExit();
     }
 }
@@ -112,8 +130,8 @@ parameterName = _stateObj.parameterName;
 public class ParameterRelayStateObj : BTStateObject
 {
     public EBTState state;
-    
-public System.String stringValue;
-public System.String parameterName;
+
+    public System.String stringValue;
+    public System.String parameterName;
 }
 #endregion

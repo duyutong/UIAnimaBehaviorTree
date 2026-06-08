@@ -10,7 +10,7 @@ public class Deco_ParameterRelay : DecoratorNode
         title = "ParameterRelay";
         
         
-        Port port_stringValue = CreatePortForNode(this, Direction.Output, typeof(System.String), Port.Capacity.Single);
+        Port port_stringValue = CreatePortForNode(this, Direction.Output, typeof(System.String), Port.Capacity.Multi);
         port_stringValue.portName = "stringValue";
         outputContainer.Add(port_stringValue);
 
