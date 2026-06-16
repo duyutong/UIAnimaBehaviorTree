@@ -19,6 +19,7 @@ public static class GraphSaveUtility
     private static List<BTTargetObject> bTTargetObjects = new List<BTTargetObject>();
     private static List<BTTargetEvent> bTTargetEvents = new List<BTTargetEvent>();
     private static List<BTTargetContainer> bTTargetContainers = new List<BTTargetContainer>();
+    private static List<BTTargetAsset> bTTargetAssets = new List<BTTargetAsset>();
 
     /// <summary>
     /// 保存节点和连线数据到ScriptableObject，并将其存储在指定文件路径
@@ -126,6 +127,13 @@ public static class GraphSaveUtility
             bTTargetAnimaCurve.SetAnimationCurve();
         }
         bTTargetAnimaCurves.Clear();
+
+        foreach (BTTargetAsset bTTargetAsset in bTTargetAssets)
+        {
+            if (bTTargetAsset == null) continue;
+            bTTargetAsset.SetTarget();
+        }
+        bTTargetAssets.Clear();
     }
     private static void CheckAndProcessObjectFields(BTStateObject bTState)
     {
@@ -157,6 +165,12 @@ public static class GraphSaveUtility
                 BTTargetAnimaCurve bTTargetAnimaCurve = (BTTargetAnimaCurve)field.GetValue(bTState);
                 bTTargetAnimaCurve?.SerializeSelf();
                 bTTargetAnimaCurves.Add(bTTargetAnimaCurve);
+            }
+            if (field.FieldType == typeof(BTTargetAsset)) 
+            {
+                BTTargetAsset bTTargetAsset = (BTTargetAsset)field.GetValue(bTState);
+                bTTargetAsset?.SerializeSelf();
+                bTTargetAssets.Add(bTTargetAsset);
             }
         }
     }

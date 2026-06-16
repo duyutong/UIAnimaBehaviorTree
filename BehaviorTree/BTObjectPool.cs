@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -45,15 +45,6 @@ public class BTObjectPool
         }
 
         return Activator.CreateInstance(type) as T;
-    }
-    public static T GetObject<T>() where T : BehaviorTreeBaseState
-    {
-        string className = typeof(T).FullName;
-
-        T obj = GetObject(className) as T;
-        obj?.OnRefresh();
-
-        return obj;
     }
     /// <summary>
     /// 将对象归还到对象池。

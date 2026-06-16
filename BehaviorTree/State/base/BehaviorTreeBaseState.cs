@@ -66,6 +66,11 @@ public class BehaviorTreeBaseState
                 BTTargetAnimaCurve bTTargetAnimaCurve = (BTTargetAnimaCurve)field.GetValue(stateObj);
                 bTTargetAnimaCurve?.SetAnimationCurve();
             }
+            if (field.FieldType == typeof(BTTargetAsset)) 
+            {
+                BTTargetAsset bTTargetAsset = (BTTargetAsset)field.GetValue(stateObj);
+                bTTargetAsset?.SetTarget();
+            }
         }
     }
 
@@ -168,10 +173,34 @@ public class BehaviorTreeBaseState
     /// </summary>
     public virtual void OnExit()
     {
-        if (output.Count == 1 && output[0].fromPortName == "exit") output[0].value = true;
+        SetExitValueQuickly();
 
         state = EBTState.完成;
         onExitForRuntime?.Invoke();
+    }
+    private void SetExitValueQuickly() 
+    {
+        // 一次遍历，同时判断并赋值
+        bool allMatch = true;
+        for (int i = 0; i < output.Count; i++)
+        {
+            if (output[i].fromPortName != "exit")
+            {
+                allMatch = false;
+                // 注意：不能直接 break，因为需要继续判断是否全部匹配
+                // 如果只是要找出是否全部匹配，可以在确认不匹配后继续或break
+                // 但这里需要精确判断，所以继续循环或跳出都可以
+            }
+        }
+
+        // 如果全部匹配，再遍历一次赋值
+        if (allMatch)
+        {
+            for (int i = 0; i < output.Count; i++)
+            {
+                output[i].value = true;
+            }
+        }
     }
     /// <summary>
     /// 打断

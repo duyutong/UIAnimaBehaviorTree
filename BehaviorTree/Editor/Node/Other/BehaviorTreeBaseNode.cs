@@ -179,7 +179,7 @@ public class BTNodePortSetting
 
     public EPortType GetEPortTypeByType(Type type)
     {
-        switch (type) 
+        switch (type)
         {
             case Type t when t == typeof(bool): return EPortType.Boolean;
             case Type t when t == typeof(int): return EPortType.Int32;
@@ -194,6 +194,7 @@ public class BTNodePortSetting
             case Type t when t == typeof(BTTargetObject): return EPortType.Object;
             case Type t when t == typeof(BTTargetEvent): return EPortType.Event;
             case Type t when t == typeof(BTTargetContainer): return EPortType.BTContainer;
+            case Type t when t == typeof(BTTargetAsset): return EPortType.Asset;
         }
         return EPortType.String;
     }
@@ -218,6 +219,7 @@ public class BTNodePortSetting
             case EPortType.Object: return typeof(BTTargetObject);
             case EPortType.Event: return typeof(BTTargetEvent);
             case EPortType.BTContainer: return typeof(BTTargetContainer);
+            case EPortType.Asset: return typeof(BTTargetAsset);
         }
         return typeof(string);
     }
@@ -242,4 +244,5 @@ public enum EPortType
     Object,
     Event,
     BTContainer,
+    Asset,
 }
